@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="sample">
+
+	<select id="getToday" parameterClass="HashMap" resultClass="String">
+		SELECT NOW()
+	</select>
+	
+	
+	<select id="test" parameterClass="HashMap" resultClass="HashMap">
+		
+		SELECT TB.*
+		  FROM 
+					(		     
+						SELECT '혜수' AS firstName , '김' AS lastName , '좋아요~' AS point , '난 알아요. 이 밤이 흐르고 흐르면..' AS etc
+						UNION  
+						SELECT '나영' AS firstName , '이' AS lastName , '좋아요~' AS point, '난 알아요. 이 밤이 흐르고 흐르면..' AS etc
+						UNION  
+						SELECT '지성' AS firstName , '박' AS lastName , '캡틴' AS point, '난 알아요. 이 밤이 흐르고 흐르면..' AS etc
+						UNION  
+						SELECT '줘영' AS firstName , '밥' AS lastName , '벤치멤버' AS point, '난 알아요. 이 밤이 흐르고 흐르면..' AS etc
+					) TB		
+	</select>
+	
+	
+	
+	
+	
+	
+	<!-- 운송해더 검색조건 -->
+	<sql id="conditionTmsOdToHdList">
+		<!--
+		<dynamic prepend="WHERE">
+			 <isNotEmpty prepend="AND " property="firstName" >FIRST_NAME=#firstName#</isNotEmpty>
+		</dynamic>
+		-->
+		WHERE DEL_YN='N'
+	</sql>
+	
+	<!-- 운송해더 총 갯수 -->
+	<select id="getTmsOdToHdListCnt" parameterClass="HashMap" resultClass="String">
+		SELECT COUNT(*) AS CNT
+		  FROM TMS_OD_TO_HD
+		<include refid="conditionTmsOdToHdList"/>
+	</select>
+	
+	<!-- 운송해더 검색결과 -->
+	<select id="getTmsOdToHdList" parameterClass="HashMap" resultClass="HashMap">
+		SELECT 
+					EO_ID
+					,SHPR_ID
+					,RATE_CLS_CD
+					,TOT_QTY
+					,TOT_WT
+					,TOT_AMT
+					,TOT_DISTANCE
+					,INS_DATE
+					,INS_TIME
+					,SUBSTR(INS_TIME,1,2) AS INS_HH
+					,SUBSTR(INS_TIME,3,2) AS INS_MI
+					,DEP_SIDO_CD
+					,DEP_SIDO_NM
+					,DEP_GUGUN_CD
+					,DEP_GUGUN_NM
+					,DEP_DONGRI_CD
+					,DEP_DONGRI_NM
+					,DEP_ZIP
+					,DEP_ADDR1
+					,DEP_ADDR2
+					,DEP_COORD_X
+					,DEP_COORD_Y
+					,DEP_PGI_DATE
+					,SUBSTR(DEP_PGI_TIME,1,2) AS DEP_PGI_HH
+					,SUBSTR(DEP_PGI_TIME,3,2) AS DEP_PGI_MI
+					,DEP_REQ_DATE
+					,SUBSTR(DEP_REQ_TIME,1,2) AS DEP_REQ_HH
+					,SUBSTR(DEP_REQ_TIME,3,2) AS DEP_REQ_MI
+					,DEL_YN 
+		  FROM TMS_OD_TO_HD
+		<include refid="conditionTmsOdToHdList"/>
+		 ORDER BY EO_ID DESC
+		 LIMIT $pageStart$ , $pageEnd$
+	</select>
+	
+	
+	
+	<!-- 운송디테일 검색조건 -->
+	<sql id="conditionTmsOdToDTLList">
+		<!--
+		<dynamic prepend="WHERE">
+			 <isNotEmpty prepend="AND " property="firstName" >FIRST_NAME=#firstName#</isNotEmpty>
+		</dynamic>
+		-->
+		WHERE DEL_YN='N'
+	</sql>
+	
+	<!-- 운송디테일 총 갯수 -->
+	<select id="getTmsOdToDtlListCnt" parameterClass="HashMap" resultClass="String">
+		SELECT COUNT(*) AS CNT
+		  FROM TMS_OD_TO_DTL
+		<include refid="conditionTmsOdToDTLList"/>
+	</select>
+	
+	<!-- 운송디테일 검색결과 -->
+	<select id="getTmsOdToDtlList" parameterClass="HashMap" resultClass="HashMap">
+		SELECT 
+					TOL_NO
+					,EO_ID
+					,SHMPT_NO
+					,TOL_SCD
+					,FC_MDM_GET_MC_CODE_NM('TOL_SCD',T1.TOL_SCD) AS TOL_SNM
+					,ITEM_ID
+					,ITEM_NM
+					,QTY
+					,WT
+					,AMT
+					,EST_DISTANCE
+					,ARR_SIDO_CD
+					,ARR_SIDO_NM
+					,ARR_GUGUN_CD
+					,ARR_GUGUN_NM
+					,ARR_DONGRI_CD
+					,ARR_DONGRI_NM
+					,ARR_ZIP
+					,ARR_ADDR1
+					,ARR_ADDR2
+					,ARR_COORD_X
+					,ARR_COORD_Y
+					,ARR_DLVRY_DATE
+					,ARR_DLVRY_TIME
+					,ARR_REQ_DATE
+					,ARR_REQ_TIME
+					,DEL_YN
+		  FROM TMS_OD_TO_DTL T1
+		<include refid="conditionTmsOdToHdList"/>
+		 ORDER BY EO_ID DESC
+		 LIMIT $pageStart$ , $pageEnd$
+	</select>
+	
+	
+	
+	
+		
+	
+	<!-- 특정 운송해더 검색결과 - 날짜관련  -->
+	<select id="getTmsOdToHdInfo" parameterClass="HashMap" resultClass="HashMap">
+		SELECT 
+					INS_DATE
+					,INS_TIME
+					,SUBSTR(INS_TIME,1,2) AS INS_HH
+					,SUBSTR(INS_TIME,3,2) AS INS_MI
+					,DEP_PGI_DATE
+					,DEP_PGI_TIME
+					,SUBSTR(DEP_PGI_TIME,1,2) AS DEP_PGI_HH
+					,SUBSTR(DEP_PGI_TIME,3,2) AS DEP_PGI_MI
+					,DEP_REQ_DATE
+					,DEP_REQ_TIME
+					,SUBSTR(DEP_REQ_TIME,1,2) AS DEP_REQ_HH
+					,SUBSTR(DEP_REQ_TIME,3,2) AS DEP_REQ_MI
+		  FROM TMS_OD_TO_HD
+		WHERE EO_ID = #pk1#
+	</select>
+	
+	
+	<update id="updateTmsOdToHdInfo" parameterClass="HashMap" >
+		
+		UPDATE TMS_OD_TO_HD
+		      SET <isEqual property="cellName" compareValue="SHPR_ID">SHPR_ID=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="RATE_CLS_CD">RATE_CLS_CD=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="TOT_QTY">TOT_QTY=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="TOT_WT">TOT_WT=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="TOT_AMT">TOT_AMT=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="TOT_DISTANCE">TOT_DISTANCE=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="INS_DATE">INS_DATE=REPLACE(#cellValue#,'-','')</isEqual>
+					<isEqual property="cellName" compareValue="INS_TIME">INS_TIME=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_SIDO_CD">DEP_SIDO_CD=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_SIDO_NM">DEP_SIDO_NM=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_GUGUN_CD">DEP_GUGUN_CD=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_GUGUN_NM">DEP_GUGUN_NM=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_DONGRI_CD">DEP_DONGRI_CD=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_DONGRI_NM">DEP_DONGRI_NM=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_ZIP">DEP_ZIP=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_ADDR1">DEP_ADDR1=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_ADDR2">DEP_ADDR2=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_COORD_X">DEP_COORD_X=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_COORD_Y">DEP_COORD_Y=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_PGI_DATE">DEP_PGI_DATE=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_PGI_TIME">DEP_PGI_TIME=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_REQ_DATE">DEP_REQ_DATE=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEP_REQ_TIME">DEP_REQ_TIME=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEL_YN">DEL_YN=#cellValue#</isEqual>
+		 WHERE EO_ID = #pk1#
+		  
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	<update id="updateTmsOdToDtlInfo" parameterClass="HashMap" >
+		
+		UPDATE TMS_OD_TO_DTL
+		      SET <isEqual property="cellName" compareValue="SHMPT_NO">SHMPT_NO=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="TOL_SCD">TOL_SCD=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ITEM_ID">ITEM_ID=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ITEM_NM">ITEM_NM=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="QTY">QTY=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="WT">WT=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="AMT">AMT=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="EST_DISTANCE">EST_DISTANCE=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_SIDO_CD">ARR_SIDO_CD=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_SIDO_NM">ARR_SIDO_NM=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_GUGUN_CD">ARR_GUGUN_CD=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_GUGUN_NM">ARR_GUGUN_NM=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_DONGRI_CD">ARR_DONGRI_CD=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_DONGRI_NM">ARR_DONGRI_NM=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_ZIP">ARR_ZIP=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_ADDR1">ARR_ADDR1=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_ADDR2">ARR_ADDR2=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_COORD_X">ARR_COORD_X=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_COORD_Y">ARR_COORD_Y=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_DLVRY_DATE">ARR_DLVRY_DATE=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_DLVRY_TIME">ARR_DLVRY_TIME=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_REQ_DATE">ARR_REQ_DATE=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="ARR_REQ_TIME">ARR_REQ_TIME=#cellValue#</isEqual>
+					<isEqual property="cellName" compareValue="DEL_YN">DEL_YN=#cellValue#</isEqual>
+		 WHERE TOL_NO= #pk1#
+		     AND EO_ID = #pk2#
+		  
+	</update>
+	
+	
+	
+	
+	
+	  
+</sqlMap>
+

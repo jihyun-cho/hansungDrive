@@ -1,0 +1,50 @@
+@charset "utf-8";
+/* CSH(myint@naver.com) 131001 */
+
+@font-face{
+font-family:ng;
+font-style:normal;
+font-weight:normal;
+src: url('/tms/asset/font/NanumGothic.eot'); 
+src: local(※), url('/tms/asset/font/NanumGothic.woff') format('woff'), url('/tms/asset/font/NanumGothic.ttf') format('truetype');
+}
+
+@font-face{
+font-family:ngbold;
+font-style:normal;
+font-weight:normal;
+src: url('/tms/asset/font/NanumGothicBoldCompact.eot'); 
+src: local(※), url('/tms/asset/font/NanumGothicBoldCompact.woff') format('woff'), url('/tms/asset/font/NanumGothicBoldCompact.ttf') format('truetype');
+}
+
+*{margin:0; padding:0; font-family:dotum,tahoma; font-size:12px; line-height:1.3em; color:#454545;}
+
+table{border-collapse:collapse; border-spacing:0;}
+table caption{text-indent:-1000em; width:0; height:0; font-size:0; line-height:0;}
+table colgroup{background:transparent;}
+
+img, fieldset, button{border:0 solid transparent;}
+button img{display:none;}
+
+ol, ul{list-style:none;}
+blockquote, q{quotes:none;}
+em{font-style:normal;}
+
+a:link, a:visited{color:#333; text-decoration:none;}
+a:hover{color:#222; text-decoration:none;}
+a:active{color:#222; text-decoration:none;}
+
+textarea{overflow:auto;}
+html:first-child select{padding-right:6px; height:20px;} /* Opera 9 & Below Fix */
+option{padding-right:6px;} /* Firefox Fix */
+legend{position:absolute; width:0; height:0; overflow:hidden; visibility:hidden; font-size:0; line-height:0;} /* For Screen Reader */
+select{vertical-align:middle; font-family:dotum !important; font-size:12px;}
+input{font-family:dotum !important; vertical-align:middle;}
+
+.input{padding-left:5px; height:24px; line-height:24px; vertical-align:middle; border:1px solid #abadb3; background:#fff;}
+.readonly{background:#d8d8d8;}
+.textarea{padding:5px; line-height:20px; border:1px solid #abadb3; background:#fff;}
+.select{padding:4px 0;}
+
+.clear{display:block; float:none; clear:both; height:0; width:100%; font-size:0 !important; line-height:0 !important; overflow:hidden; margin:0 !important; padding:0 !important;}
+.blind{position:absolute; width:0; height:0; overflow:hidden; visibility:hidden; font-size:0; line-height:0;}

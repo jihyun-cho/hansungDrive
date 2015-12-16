@@ -1,0 +1,129 @@
+@charset "utf-8";
+/* CSH(myint@naver.com) 131001 */
+
+@import url(default.css);
+
+/* layout */
+#wrap{width:100%;}
+
+/* tab */
+.tab{margin-bottom:10px; height:31px; background:url('../../images/sys/tab_bg.gif') repeat-x 0 0;}
+.tab ul{*zoom:1;}
+.tab ul:after{content:""; display:block; clear:both;}
+.tab ul li{float:left; margin-right:2px;}
+.tab ul li a{display:block; padding:0 20px; height:29px; font-weight:bold; line-height:29px; color:#757575; text-align:center; border:1px solid #bbb; border-bottom:none; background:#fff;}
+.tab ul li.active a{height:30px; color:#007dc3; border:1px solid #007dc3; border-bottom:none; background:#fff url('../../images/sys/bullet_tab.png') no-repeat right center;}
+
+/* tab */
+.tab1{margin-bottom:10px; height:31px;margin-top:5px; background:url('../../images/sys/tab_bg.gif') repeat-x 0 0;min-width:1600px;}
+.tab1 ul{*zoom:1;}
+.tab1 ul:after{content:""; display:block; clear:both;}
+.tab1 ul li{float:right;width:173px;}
+.tab1 ul li a{display:block; padding:0 20px; height:29px; font-weight:bold; line-height:29px; color:#757575; text-align:center; border:1px solid #bbb; border-bottom:none; background:#fff;}
+.tab1 ul li.active a{height:30px; color:#007dc3; border:1px solid #007dc3; border-bottom:none; background:#fff url('../../images/sys/bullet_tab.png') no-repeat right center;}
+
+/* search box */
+.searchBox{position:relative; padding:7px 0; border:1px solid #bbb; background:#fcfcfc;min-width:1190px;}
+.searchBox .blueBtn{position:absolute; top:-39px; right:0;}
+.searchBox table{}
+.searchBox table tbody th{text-align:center;padding-left:20px;}
+.searchBox table tbody th span{display:inline-block; padding-left:10px; background:url('../../images/sys/bullet_search_option.png') no-repeat 0 50%;}
+.searchBox table tbody th em{color:#f00;}
+.searchBox table td{padding-left:20px;text-align:center;}
+.searchBox table .line{border-left:1px solid #bbb;}
+.searchBox table img{vertical-align:middle;}
+.searchBox.form{padding:0; border:none; background:#fff;}
+.searchBox.form table{width:100%;}
+.searchBox.form table tbody th{padding:0 7px; width:110px; letter-spacing:-1px; border:1px solid #bbb; background:#dfe3e6;}
+.searchBox.form table tbody th span{padding:0; background:none;}
+.searchBox.form table td{padding:4px 0 4px 7px; height:26px; border:1px solid #bbb;}
+.searchBox label{display:inline-block; padding:0 6px 0 25px; font-weight:bold; background:url('../../images/sys/bullet_search_option.png') no-repeat 15px 50%;}
+.searchBox label.check{padding-left:15px; background:none;}
+.searchBox label.radio{padding:0 20px 0 0; height:26px; line-height:26px; background:none;}
+.wrap .searchBox .blueBtn{top:-49px;}
+
+/* gis */
+#gis #header{height:54px; min-width:1600px; background:url('../../images/sys/header_bg_gis.gif') repeat-x 0 0;}
+#gis #header table {width:100%;height:54px;padding-bottom:5px;}
+#gis #header .select{*zoom:1;}
+#gis #header .select:after{content:""; display:block; clear:both;}
+#gis #header .select .area{float:left; position:relative; margin-right:7px;}
+#gis #header .select span{display:block; width:140px; height:34px; font-family:ngbold; color:#fff; font-size:14px; line-height:34px; cursor:pointer; background:url('../../images/sys/ico_gis_arrow.png') no-repeat 117px -39px;}
+#gis #header .select select{position:absolute; top:34px; left:0; width:132px;}
+#gis #header .btnArea ul{*zoom:1;margin-right:6px;}
+#gis #header .btnArea ul:after{content:""; display:block; clear:both;}
+#gis #header .btnArea li{float:right; margin-left:6px;}
+#gis #header .btnArea li a{display:block; height:27px; overflow:hidden; text-indent:-9999em; background:url('../../images/sys/btn_gis.gif') no-repeat 0 0;}
+#gis #header .btnArea li a.btn1{width:90px; background-position:0 0;}
+#gis #header .btnArea li a.btn2{width:60px; background-position:-90px 0;}
+#gis #header .btnArea li a.btn3{width:60px; background-position:-150px 0;}
+#gis #header .btnArea li.active a.btn1{background-position:0 -27px;}
+#gis #header .btnArea li.active a.btn2{background-position:-90px -27px;}
+#gis #header .btnArea li.active a.btn3{background-position:-150px -27px;}
+#gis #container{padding-left:15px;}
+
+#gis #leftSec{float:left; margin-right:10px; padding-top:10px; width:370px;}
+#gis #leftSec .tab{margin-bottom:5px;}
+#gis #leftSec .tab li{margin:0}
+#gis #leftSec .tab li a{padding:0; width:183px;}
+#gis #leftSec .tab li.first{margin:0;}
+#gis #leftSec .tab li.first a{width:109px;}
+#gis #leftSec .list{position:relative; overflow-y:scroll; border:1px solid #bbb;}
+#gis #leftSec .list li{padding-left:12px;padding-top:5px; border-bottom:1px solid #bbb;}
+#gis #leftSec .list li h3{position:relative; padding:0; width:330px; height:20px; color:#007dc3; font-weight:bold; line-height:20px;}
+#gis #leftSec .list li h3 a{display:block; line-height:20px; color:#007dc3; font-weight:bold;}
+#gis #leftSec .list li h3 a span{display:inline-block; width:10px; height:13px; vertical-align:middle; background:url('../../images/sys/ico_gis_list.png') no-repeat 0 0;}
+#gis #leftSec .list li h3 em{position:absolute; top:0; right:0px; display:block; padding:0 4px; height:18px; font-size:11px; line-height:19px; border-radius:3px; color:#fff; background:#2d323d;}
+#gis #leftSec .list li p{line-height:20px;}
+#gis #leftSec .list li .info{line-height:20px; color:#000;}
+#gis #leftSec .list li .centerBtn{margin-top:3px;}
+#gis #leftSec .list li .centerBtn span{width:66px;}
+#gis #leftSec .list li.active{background:#eff1f2;}
+#gis #leftSec .list li.active h3 a span{background-position:-11px 0;}
+
+#gis #content {float:left;min-width:1190px;}
+#gis #content h2{height:40px; font-family:ngbold; font-weight:normal; font-size:20px; color:#222; line-height:41px;}
+#gis #content .mapDiv { border-bottom:1px solid #bbb;border-left:1px solid #bbb;border-right:1px solid #bbb; }
+#gis .tooltip{position:absolute;z-index:99999999999999999999; padding:10px; border:1px solid #444; background:#fff;width:180px;height:150px;}
+#gis .tooltip .closeBtn{position:absolute; top:8px; right:8px;}
+#gis .tooltip .table1 { border:1px solid #bbb;width:100%;height:25px;margin-bottom:5px; }
+#gis .tooltip .table1 td { text-align:center; font-weight:bold; line-height:23px; color:#707070; background:#fcfcfc;cursor:pointer;border-radius:3px;}
+#gis .tooltip .table1 .active { color:#fff; background:#2d323d; }
+
+#gis .tooltip .table2 { width:100%;height:115px; }
+#gis .tooltip .table2 th { width:20%;text-align:center;padding-bottom:5px; }
+#gis .tooltip .table2 td { width:80%;text-align:left;padding-left:5px; }
+
+#gis #popupContent { position:absolute;z-index:99999999999999;bottom:0px;left:393px;border:1px solid #bbb;min-width:1193px;height:260px;background:#fff; }
+#gis #popupContent #popCont {padding:10px;}
+#gis #popupContent #popCont table {width:100%;}
+#gis #popupContent #popCont table tr {height:30px;}
+#gis #popupContent #popCont table th {width:20%;border:1px solid #bbb;text-align:center;background:#dfe3e6;}
+#gis #popupContent #popCont table td {width:30%;border:1px solid #bbb;text-align:left;padding-left:5px;}
+#gis #popupContent .closeBtn1{position:absolute; top:17px; right:13px;}
+
+#gis #cargoInfo{width:400px;position:absolute; border:1px solid #444; background:#fff;}
+#gis #cargoInfo .closeBtn{position:absolute; top:8px; right:8px;}
+#gis #cargoInfo h3{position:relative; padding:0 0 0 10px; height:32px; line-height:32px; border-bottom:2px solid #000;}
+#gis #cargoInfo h3 a{display:inline-block; font-size:14px; color:#007dc3; font-weight:bold;}
+#gis #cargoInfo h3 em{display:inline-block; padding:0 4px; height:18px; font-size:11px; line-height:19px; border-radius:3px; vertical-align:middle; color:#fff; background:#2d323d;}
+#gis #cargoInfo .sec{padding:8px 10px;border-bottom:1px solid #bbb;}
+#gis #cargoInfo .sec .info{line-height:20px; color:#000;}
+#gis #cargoInfo .sec p{line-height:20px;}
+#gis #cargoInfo .centerBtn{padding:7px 0;text-align:center;}
+#gis #cargoInfo .centerBtn a{display:inline-block; width:80px; height:23px; line-height:23px; font-weight:bold; text-align:center; color:#707070; border:1px solid #bbb; border-radius:4px; background:#fcfcfc;}
+
+#gis #cargoList{width:284px;}
+#gis #cargoList h3{position:relative; padding:0 0 0 10px; height:32px; font-family:dotum; font-size:14px; font-weight:bold; line-height:32px; border-bottom:2px solid #000;}
+#gis #cargoList h3 strong{font-size:14px; font-weight:bold; color:#007dc3;}
+#gis #cargoList .sec{height:70px; overflow-y:scroll;}
+#gis #cargoList .sec ul{padding:8px 10px;}
+#gis #cargoList .sec li{line-height:18px;}
+#gis #checkboxDiv { position:absolute;z-index:999999;right:3px;top:90px;background:#fff;border:1px solid #bbb;font-size:10pt;font-family:dotum;padding:5px; }
+
+/* paginate */
+.paginate{padding-top:15px; text-align:center;}
+.paginate img{vertical-align:middle;}
+.paginate strong{display:inline-block; margin:0 3px; color:#007dc3; text-decoration:underline;}
+.paginate a{display:inline-block; margin:0 3px; color:#454545;}
+

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tms">
+
+	<!-- ########################################################### 
+	## 배차의회 해더 쿼리		
+	 ########################################################### -->
+
+	<!-- 배차의뢰 해더 검색조건 -->
+	<sql id="conditionSubTmsHd">
+		WHERE T1.EO_ID = T2.EO_ID
+           AND T1.DEL_YN = 'N'
+           AND T1.TOL_SCD = '010'
+           AND T2.DEL_YN = 'N'
+           <isNotEmpty property="shprId">
+           AND T2.SHPR_ID = #shprId#
+           </isNotEmpty>
+           <isNotEmpty property="depAddrId">
+           AND T2.DEP_DONGRI_CD = #depAddrId#
+           </isNotEmpty>
+           <isNotEmpty property="startDepPgiDate">
+           AND T2.DEP_PGI_DATE <![CDATA[>=]]> REPLACE(#startDepPgiDate# , '-' , '')
+           </isNotEmpty>
+           <isNotEmpty property="endDepPgiDate">
+           AND T2.DEP_PGI_DATE <![CDATA[<=]]> REPLACE(#endDepPgiDate# , '-' , '')
+           </isNotEmpty>
+	</sql>
+
+	<!-- 배차의뢰 해더 서브쿼리 : T3  -->
+	<sql id="sub03TmsHd">
+        SELECT T1.EO_ID
+                 , T1.ARR_ADDR1
+                 , T1.ARR_ADDR2
+                 , T1.ARR_DLVRY_DATE
+                 , T1.ARR_DLVRY_TIME
+		 FROM TMS_OD_TO_DTL T1  , TMS_OD_TO_HD T2
+        <include refid="conditionSubTmsHd"/>
+	</sql>
+	
+
+	<!-- 배차의뢰 해더 서브쿼리 : T4  -->
+	<sql id="sub04TmsHd">
+        SELECT (SELECT FC_MDM_GET_MC_CODE_NM('TOL_SCD',T1.TOL_SCD)) AS CAR_ALLOW_STATS  -- 배차상태
+	         , (SELECT S.SHPR_NM FROM MDM_SHPR_INFO S WHERE S.DEL_YN='N' AND S.SHPR_ID=T2.SHPR_ID) AS SHPR_NM -- 고객
+	         , T2.DEP_ADDR1  -- 상차지 주소
+	         , T2.DEP_ADDR2  -- 상차지 주소 마우스 오버
+			 , CASE
+    		 		WHEN (SELECT COUNT(*) FROM TMS_OD_TO_DTL WHERE EO_ID = T2.EO_ID) = 1 THEN  T1.ITEM_NM
+					ELSE CONCAT(T1.ITEM_NM , ' 외 ' , ((SELECT COUNT(*) FROM TMS_OD_TO_DTL WHERE EO_ID=T2.EO_ID)-1) , '종')
+			   END ITEM_NM
+	         , T2.RATE_CLS_CD 
+	         , (SELECT FC_MDM_GET_MC_CODE_NM('CM035' , T2.RATE_CLS_CD)) AS RATE_CLS_NM 
+	         , SUM(T1.QTY) AS SUM_DTL_QTY -- 디테일 수량 
+	         , SUM(T1.WT) AS SUM_DTL_WT -- 디테일 합산 중량
+	         , SUM(T1.AMT) AS SUM_DTL_AMT -- 디테일 합산 금액
+	         , T2.TOT_QTY -- 총수량
+	         , T2.TOT_WT -- 총중량
+	         , T2.TOT_AMT -- 총금액
+	         , '' AS EQP_NO -- 차량번호 
+	         , '' AS MNF_NO -- 배차번호
+	         , CONCAT(T2.DEP_PGI_DATE , T2.DEP_PGI_TIME) AS DEP_PGI_DATETIME -- 상차일시
+	         , MAX(CONCAT(T1.ARR_DLVRY_DATE , T1.ARR_DLVRY_TIME)) AS ARR_DLVRY_DATETIME -- 하차일시
+	         , T1.EO_ID -- 주문번호
+	         , CONCAT(T2.INS_DATE , T2.INS_TIME) AS INS_DATETIME -- 주문일시
+	         , SUM(T1.EST_DISTANCE) AS EST_DISTANCE -- 운송거리
+	         , '' AS REMK -- 요청사항 
+		 FROM TMS_OD_TO_DTL T1 , TMS_OD_TO_HD T2
+		<include refid="conditionSubTmsHd"/>
+        GROUP BY T1.EO_ID
+	</sql>
+	
+	
+	<!-- 배차의뢰 해더 검색조건 -->
+	<sql id="conditionTmsHd">
+		 WHERE T3.EO_ID = T4.EO_ID
+		   AND T3.ARR_DLVRY_DATE = SUBSTR(T4.ARR_DLVRY_DATETIME , 1 , 8)
+		   AND T3.ARR_DLVRY_TIME = SUBSTR(T4.ARR_DLVRY_DATETIME , 9 , 6)
+	</sql>
+	
+	
+	<!-- 배차의뢰 해더 총 갯수 -->
+	<select id="getTmsHdCnt" parameterClass="HashMap" resultClass="String">
+		
+		SELECT COUNT(*) AS CNT
+		 FROM (<include refid="sub03TmsHd"/>) T3
+				 , (<include refid="sub04TmsHd"/>) T4
+		<include refid="conditionTmsHd"/>
+		
+	</select>
+		
+		
+	<!-- 배차의뢰 해더 검색결과 -->
+	<select id="getTmsHdList" parameterClass="HashMap" resultClass="HashMap">
+
+		SELECT T4.CAR_ALLOW_STATS
+			     , T4.SHPR_NM
+			     , T4.DEP_ADDR1
+			     , T4.DEP_ADDR2
+			     , T3.ARR_ADDR1 -- 하차지 주소
+			     , T3.ARR_ADDR2 -- 하차지 주소 마우스 오버
+			     , T4.ITEM_NM
+			     , '' AS EQP_TON_CD -- 차량톤급 코드 
+			     , '' AS EQP_TON_NM -- 차량톤급명 
+			     , '' AS EQP_KND_CD -- 차량종류 코드
+			     , '' AS EQP_KND_NM -- 차량종류 명
+			     , T4.RATE_CLS_CD
+			     , T4.RATE_CLS_NM
+			     , T4.TOT_QTY
+			     , T4.TOT_WT
+			     , T4.TOT_AMT
+			     , T4.SUM_DTL_QTY
+			     , T4.SUM_DTL_WT
+			     , T4.SUM_DTL_AMT   
+			     , T4.EQP_NO
+			     , '' AS VHCL_NO
+			     , '' AS DRIVER_NM	-- 운전자명
+			     , '' AS DRIVER_TEL_NO	-- 운전자번호
+			     , T4.MNF_NO
+			     , DATE_FORMAT(T4.DEP_PGI_DATETIME , '%y.%m.%d %H:%i') AS DEP_PGI_DATETIME	   
+			     , DATE_FORMAT(T4.ARR_DLVRY_DATETIME , '%y.%m.%d %H:%i') AS ARR_DLVRY_DATETIME
+			     , T4.EO_ID
+			     , DATE_FORMAT(T4.INS_DATETIME , '%y.%m.%d %H:%i') AS INS_DATETIME
+			     , T4.EST_DISTANCE
+			     , T4.REMK
+		 FROM (<include refid="sub03TmsHd"/>) T3
+				 , (<include refid="sub04TmsHd"/>) T4
+		<include refid="conditionTmsHd"/>
+		 ORDER BY EO_ID DESC
+		 LIMIT $pageStart$ , $pageEnd$
+		 
+	</select>		
+
+	
+	
+	
+	
+	
+	<!-- 배차의뢰 디테일 검색조건 -->
+	<sql id="conditionTmsDtl">
+		WHERE T1.EO_ID = T2.EO_ID
+		    AND T1.DEL_YN='N'
+		    AND T2.DEL_YN='N'
+		    <isNotEmpty property="eoId">
+            AND T1.EO_ID = #eoId#
+            </isNotEmpty>
+		    <isNotEmpty property="startDepPgiDate">
+            AND T2.DEP_PGI_DATE <![CDATA[>=]]> REPLACE(#startDepPgiDate# , '-' , '')
+            </isNotEmpty>
+            <isNotEmpty property="endDepPgiDate">
+            AND T2.DEP_PGI_DATE <![CDATA[<=]]> REPLACE(#endDepPgiDate# , '-' , '')
+            </isNotEmpty>
+	</sql>
+	
+	<!-- 배차의뢰 총 갯수 -->
+	<select id="getTmsDtlCnt" parameterClass="HashMap" resultClass="String">
+		SELECT COUNT(*) AS CNT
+		  FROM TMS_OD_TO_DTL T1 , TMS_OD_TO_HD T2
+		<include refid="conditionTmsDtl"/>
+	</select>
+	
+	<!-- 배차의뢰 검색결과 -->
+	<select id="getTmsDtlList" parameterClass="HashMap" resultClass="HashMap">
+		SELECT T1.TOL_NO
+				 , T1.EO_ID
+				 , T1.SHMPT_NO
+				 , T1.TOL_SCD
+				 , FC_MDM_GET_MC_CODE_NM('TOL_SCD' , T1.TOL_SCD) AS TOL_SNM
+				 , T1.ITEM_ID
+				 , T1.ITEM_NM
+				 , T1.QTY
+				 , T1.WT
+				 , T1.AMT
+				 , T1.EST_DISTANCE
+				 , T1.ARR_SIDO_CD
+				 , T1.ARR_SIDO_NM
+				 , T1.ARR_GUGUN_CD
+				 , T1.ARR_GUGUN_NM
+				 , T1.ARR_DONGRI_CD
+				 , T1.ARR_DONGRI_NM
+				 , T1.ARR_ZIP
+				 , T1.ARR_ADDR1
+				 , T1.ARR_ADDR2
+				 , CONCAT(T1.ARR_ADDR1 , ' ' , T1.ARR_ADDR2) AS ARR_ADDR
+				 , T1.ARR_COORD_X
+				 , T1.ARR_COORD_Y
+				 , DATE_FORMAT(CONCAT(T1.ARR_DLVRY_DATE , T1.ARR_DLVRY_TIME) , '%y.%m.%d %H:%i') AS ARR_DLVRY_DATETIME -- 하차일시
+				 , DATE_FORMAT(CONCAT(T1.ARR_REQ_DATE , T1.ARR_REQ_TIME) , '%y.%m.%d %H:%i') AS ARR_REQ_DATETIME -- 하차요청일시
+		  FROM TMS_OD_TO_DTL T1 , TMS_OD_TO_HD T2
+		<include refid="conditionTmsDtl"/>
+		 ORDER BY T1.EO_ID DESC , T1.TOL_NO DESC
+		 LIMIT $pageStart$ , $pageEnd$
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	  
+	<!-- 
+		배차의뢰 정보 변경 - 필수값 체크한 파라미터는 ibatis 조건태그를 안써도 됨.
+	 -->
+	<update id="updateTmsHdInfo" parameterClass="HashMap" >
+		
+			UPDATE TMS_OD_TO_HD
+			       SET TOT_WT=#TOT_WT# 
+			             ,TOT_QTY=#TOT_QTY#
+			             ,RATE_CLS_CD=#RATE_CLS_CD#
+			             ,TOT_AMT=#TOT_AMT#
+			  WHERE EO_ID = #EO_ID#
+		  
+	</update>
+	
+	
+	
+	
+	
+	
+	
+
+	<!-- 차량검색 카운트 -->
+	<select id="getTmsVhclNoListCnt" parameterClass="HashMap" resultClass="String">
+
+		SELECT COUNT(*) AS CNT 
+		  FROM TMS.MDM_CT_EQP
+		  WHERE DEL_YN = 'N'
+		    <isNotEmpty property="VHCL_NO">
+		    AND VHCL_NO LIKE CONCAT('%', #VHCL_NO#, '%')
+		    </isNotEmpty>
+		    <isNotEmpty property="CNTRL_NO">
+		    AND CNTRL_NO LIKE CONCAT('%', #CNTRL_NO#, '%')
+		    </isNotEmpty>
+		    <isNotEmpty property="VHCL_KND_CD">
+		    AND VHCL_KND_CD = #VHCL_KND_CD#
+		    </isNotEmpty>
+		    <isNotEmpty property="VHCL_TON_CD">
+		    AND VHCL_TON_CD = #VHCL_TON_CD#
+		    </isNotEmpty>
+
+	  </select>
+
+	<!-- 차량검색리스트 -->
+	<select id="getTmsVhclNoList" parameterClass="HashMap" resultClass="HashMap">
+
+		SELECT '0' AS DISTANCE
+		     , CNTRL_NO
+		     , VHCL_NO AS EQP_NO
+		     , TMS.FC_MDM_GET_EQP_KND_NM(VHCL_KND_CD) AS VHCL_KND_NM
+		     , TMS.FC_MDM_GET_EQP_TON_NM(VHCL_TON_CD) AS VHCL_TON_NM
+		     , DRIVER_NM
+		     , '' AS TRKG_EVT_TCD_NM
+		     , '' AS REQ_VHCL_KND_NM
+		     , '' AS TRKG_NODE_NM
+		     , '' AS LAST_REGION
+		     , DRIVER_TEL_NO
+		     , '0' AS MONTH_AMT
+		     , '0' AS DAY_AMT
+		     , '0' AS MONTH_DSPH_COUNT
+		     , '0' AS DAY_DSPH_COUNT
+		     , VHCL_KND_CD
+		     , VHCL_TON_CD
+		     , '0' AS POINT
+		  FROM TMS.MDM_CT_EQP
+		  WHERE DEL_YN = 'N'
+		    <isNotEmpty property="VHCL_NO">
+		    AND VHCL_NO LIKE CONCAT('%', #VHCL_NO#, '%')
+		    </isNotEmpty>
+		    <isNotEmpty property="CNTRL_NO">
+		    AND CNTRL_NO LIKE CONCAT('%', #CNTRL_NO#, '%')
+		    </isNotEmpty>
+		    <isNotEmpty property="VHCL_KND_CD">
+		    AND VHCL_KND_CD = #VHCL_KND_CD#
+		    </isNotEmpty>
+		    <isNotEmpty property="VHCL_TON_CD">
+		    AND VHCL_TON_CD = #VHCL_TON_CD#
+		    </isNotEmpty>
+           	<isEqual property="ORDER_BY" compareValue="DISTANCE">
+           	ORDER BY DISTANCE ASC, VHCL_KND_CD, CNTRL_NO ASC
+           	</isEqual>
+           	<isEqual property="ORDER_BY" compareValue="POINT">
+           	ORDER BY POINT DESC, VHCL_KND_CD, CNTRL_NO ASC
+           	</isEqual>
+           	<isEqual property="ORDER_BY" compareValue="RESULT">
+           	ORDER BY MONTH_AMT DESC, VHCL_KND_CD, CNTRL_NO ASC
+           	</isEqual>
+           	<isEqual property="ORDER_BY" compareValue="COUNT">
+           	ORDER BY MONTH_DSPH_COUNT DESC, VHCL_KND_CD, CNTRL_NO ASC
+           	</isEqual>
+           	<isEqual property="ORDER_BY" compareValue="PREFER">
+           	ORDER BY DISTANCE ASC, VHCL_KND_CD, CNTRL_NO ASC
+           	</isEqual>
+		 LIMIT $pageStart$ , $pageEnd$
+
+	  </select>
+	  
+	  
+</sqlMap>
+
